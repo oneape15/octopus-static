@@ -1,3 +1,3 @@
 export default {
-  'settings.formatting.title': 'FORMATTING OPTIONS'
+  'settings.formatting.dates-and-times': 'Dates and Times'
 }
