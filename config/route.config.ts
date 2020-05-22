@@ -92,26 +92,26 @@ const routes = [
             ]
           },
           {
-            path: '/permission',
+            path: '/perm',
             name: 'permission',
             icon: 'key',
             routes: [
               {
-                name: 'people',
+                name: 'user',
                 icon: 'user',
-                path: '/permission/people',
-                component: './dashboard/analysis',
+                path: '/perm/user',
+                component: './permission/user',
               },
               {
-                name: 'groups',
+                name: 'roles',
                 icon: 'team',
-                path: '/permission/groups',
-                component: './dashboard/analysis',
+                path: '/perm/roles',
+                component: './permission/roles',
               },
               {
                 name: 'menus',
                 icon: 'menu',
-                path: '/permission/menus',
+                path: '/perm/menus',
                 component: './dashboard/analysis',
               },
             ]

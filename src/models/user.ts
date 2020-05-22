@@ -1,18 +1,40 @@
 import { Effect, Reducer } from 'umi';
 
-import { queryCurrent, query as queryUsers } from '@/services/user';
+import { queryCurrent, queryUsers } from '@/services/user';
+
+export interface UserListItem {
+  // 主键id
+  id?: string;
+  // 用户昵称
+  nickname?: string;
+  // 用户名登录名
+  userName?: string;
+  // 密码
+  password?: string;
+  // 手机号
+  phone?: string;
+  // 邮箱地址
+  email?: string;
+  // 角色列表
+  roles?: string[];
+  // 头像
+  avatar?: string;
+  // 最后登录时间
+  lastLogin?: string;
+}
 
 export interface CurrentUser {
-  avatar?: string;
-  name?: string;
+  id?: string;
+  nickname?: string;
+  userName?: string;
   title?: string;
   group?: string;
+  avatar?: string;
   signature?: string;
   tags?: {
     key: string;
     label: string;
   }[];
-  userid?: string;
   unreadCount?: number;
 }
 
