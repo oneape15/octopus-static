@@ -108,12 +108,6 @@ const routes = [
                 path: '/perm/roles',
                 component: './permission/roles',
               },
-              {
-                name: 'menus',
-                icon: 'menu',
-                path: '/perm/menus',
-                component: './dashboard/analysis',
-              },
             ]
           },
           {
@@ -125,7 +119,7 @@ const routes = [
                 name: 'datasource',
                 icon: 'database',
                 path: '/metadata/source',
-                component: './dashboard/analysis',
+                component: './metadata/datasource',
               },
               {
                 name: 'dict',

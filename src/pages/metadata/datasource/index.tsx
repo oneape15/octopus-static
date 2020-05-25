@@ -1,39 +1,52 @@
-import React, { Component } from 'react';
-import { connect } from 'umi';
-import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import { Button, Tooltip, Dropdown, Menu, message, Modal } from 'antd';
-import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
-import { RoleListItem } from '@/models/role';
-import OptModal from './components/OptModal';
+import React, { Component } from "react";
+import { PageHeaderWrapper } from "@ant-design/pro-layout";
+import { Button, Dropdown, Menu, message, Modal, Drawer, Checkbox } from 'antd';
+import { connect } from "dva";
+import { ConnectState } from '@/models/connect';
+import { DatasourceModelState, DatasourceListItem } from "@/models/datasource";
+import { addDatasource, updateDatasource, removeDatasource, queryDatasource } from '@/services/datasource';
+import ProTable, { ProColumns, ActionType } from "@ant-design/pro-table";
 import { PlusOutlined, EditOutlined, DeleteOutlined, } from '@ant-design/icons';
-import { queryRole, updateRole, addRole, removeRole } from '../../../services/role';
+import OptModal from './components/OptModal';
 
 const { confirm } = Modal;
 
-interface RoleListProps { }
+interface DatasourceProps {
+  dispatch: Dispatch<any>;
+  role: DatasourceModelState,
+}
 
-interface RoleListState {
+interface DatasourceState {
   optModalVisible: boolean;
   isEditOpt: boolean;
-  currentRecord: RoleListItem;
+  currentRecord: DatasourceListItem;
   tableRef: any;
 }
 
-class RoleListView extends Component<RoleListProps, RoleListState> {
+class DatasourceView extends Component<DatasourceProps, DatasourceState> {
   public state = {
     optModalVisible: false,
     isEditOpt: false,
-    currentRecord: {},
+    currentRecord: {} as DatasourceListItem,
     tableRef: React.createRef<ActionType | undefined>()
   }
 
+  componentWillMount() {
+    const { dispatch } = this.props;
+    if (dispatch) {
+      // 获取所有数据源类型
+      dispatch({
+        type: 'datasource/fetchTypeList'
+      })
+    }
+  }
   /**
    * 添加操作
    */
-  handleAdd = async (record: RoleListItem) => {
+  handleAdd = async (record: DatasourceListItem) => {
     const hide = message.loading('正在添加...');
     try {
-      await addRole(record);
+      await addDatasource(record);
       hide();
       message.success('添加成功');
       return true;
@@ -47,10 +60,10 @@ class RoleListView extends Component<RoleListProps, RoleListState> {
   /**
    * 更新操作
    */
-  handleEdit = async (record: RoleListItem) => {
+  handleEdit = async (record: DatasourceListItem) => {
     const hide = message.loading('正在修改...');
     try {
-      await updateRole(record);
+      await updateDatasource(record);
       hide();
       message.success('修改成功');
       return true;
@@ -66,7 +79,7 @@ class RoleListView extends Component<RoleListProps, RoleListState> {
   handleRemove = async (id: string) => {
     const hide = message.loading('正在删除...');
     try {
-      await removeRole(id);
+      await removeDatasource(id);
       hide();
       message.success('删除成功');
       return true;
@@ -79,20 +92,23 @@ class RoleListView extends Component<RoleListProps, RoleListState> {
 
   render() {
     const { tableRef, optModalVisible, currentRecord, isEditOpt } = this.state;
+
     // 操作菜单列表
-    const menus = (record: RoleListItem) => (
+    const menus = (record: DatasourceListItem) => (
       <Menu onClick={async (e) => {
-        if (e.key === 'modify') {
+        if (e.key === 'resetPwd') {
+
+        } else if (e.key === 'modify') {
           this.setState({
             currentRecord: record,
             isEditOpt: true,
-            optModalVisible: true,
+            optModalVisible: true
           });
         } else if (e.key === 'delete') {
           const that = this;
           confirm({
-            title: `确定删除角色：${record.name}`,
-            content: `点击【确定按钮】，删除角色${record.name}`,
+            title: `确定删除数据源：${record.name}`,
+            content: `点击【确定按钮】，删除数据源${record.name}`,
             onOk() {
               that.handleRemove(record.id ? record.id : '');
               if (tableRef.current) {
@@ -103,6 +119,9 @@ class RoleListView extends Component<RoleListProps, RoleListState> {
           });
         }
       }}>
+        <Menu.Item key="resetPwd" icon={<EditOutlined />}>
+          更改状态
+        </Menu.Item>
         <Menu.Item key="modify" icon={<EditOutlined />}>
           修改
         </Menu.Item>
@@ -112,58 +131,56 @@ class RoleListView extends Component<RoleListProps, RoleListState> {
       </Menu>
     );
 
-    // 字段信息
-    const columns: ProColumns<RoleListItem>[] = [
+    const columns: ProColumns<DatasourceListItem>[] = [
       {
-        title: '角色名称',
+        title: '数据源名称',
         dataIndex: 'name',
-        render: (text, record) => (
-          <>
-            <Tooltip title="查看人员信息">
-              <a onClick={() => {
-                console.log(record)
-              }}>
-                {text}
-              </a>
-            </Tooltip>
-          </>
-        ),
       },
       {
-        title: '角色编码',
-        dataIndex: 'code'
+        title: '源地址',
+        dataIndex: 'jdbcUrl',
       },
       {
-        title: '角色类型',
-        dataIndex: 'type',
+        title: '状态',
+        dataIndex: 'status',
         valueEnum: {
-          0: { text: '普通', status: 'Default' },
-          1: { text: '默认', status: 'Success' },
+          0: { text: '可用', status: 'Success' },
+          1: { text: '不可用', status: 'Error' },
         }
       },
       {
-        title: '成员数量',
-        dataIndex: 'members',
+        title: '同步',
+        dataIndex: 'sync',
+        valueEnum: {
+          0: { text: '关闭', status: 'Default' },
+          1: { text: '开启', status: 'Success' },
+        }
+      },
+      {
+        title: '同步周期',
+        dataIndex: 'cron',
         valueType: 'option',
-        renderText: (val: string) => `${val} 人`
       },
       {
         title: '操作',
         dataIndex: 'option',
         valueType: 'option',
         render: (_, record) => (
-          <Dropdown overlay={menus(record)}>
-            <a>...</a>
-          </Dropdown>
-        ),
+          <>
+            <Dropdown overlay={menus(record)}>
+              <a>...</a>
+            </Dropdown>
+          </>
+        )
       }
-    ];
+    ]
+
     return (
       <PageHeaderWrapper>
-        <ProTable<RoleListItem>
+        <ProTable<DatasourceListItem>
           rowKey="id"
           actionRef={this.state.tableRef}
-          toolBarRender={(action, { selectedRows }) => [
+          toolBarRender={() => [
             <Button
               type="primary"
               icon={<PlusOutlined />}
@@ -175,14 +192,15 @@ class RoleListView extends Component<RoleListProps, RoleListState> {
               }}
             >
               新建
-            </Button>,
+              </Button>
           ]}
           tableAlertRender={false}
           rowClassName={(_, index) => index % 2 === 0 ? "table-row-odd" : "table-row-even"}
-          request={(params) => queryRole(params)}
+          request={(params) => queryDatasource(params)}
           columns={columns}
           rowSelection={false}
         />
+        {/* 修改数据源信息 */}
         <OptModal
           visible={optModalVisible}
           isEdit={isEditOpt}
@@ -212,5 +230,7 @@ class RoleListView extends Component<RoleListProps, RoleListState> {
   }
 }
 
-export default connect(
-)(RoleListView);
+export default connect(({ datasource, loading }: ConnectState) => ({
+  datasource,
+  loading: loading.models.datasource,
+}))(DatasourceView);

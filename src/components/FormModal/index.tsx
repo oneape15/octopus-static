@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Form, Modal } from 'antd';
 
 interface FormModalProps {
+  width?: number;
   title: string;
   visible: boolean;
   current: Partial<any> | undefined;
@@ -12,7 +13,7 @@ interface FormModalProps {
 const FormModal: React.FC<FormModalProps> = (props) => {
   const [form] = Form.useForm();
   const [oldRecord, setOldRecord] = useState<any>();
-  const { children, title, current, visible, onCancel, onSubmit: handleAdd } = props;
+  const { children, title, width: modelWidth, current, visible, onCancel, onSubmit: handleAdd } = props;
 
   useEffect(() => {
     if (form && !visible) {
@@ -41,10 +42,11 @@ const FormModal: React.FC<FormModalProps> = (props) => {
     labelCol: { span: 4, offset: 2 },
     wrapperCol: { span: 16 }
   }
-
+  let width = (modelWidth && modelWidth > 100) ? modelWidth : 500;
   return (
     <Modal
       destroyOnClose
+      width={width}
       title={title}
       visible={visible}
       onOk={okHandle}

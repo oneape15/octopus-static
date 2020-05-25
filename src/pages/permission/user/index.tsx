@@ -199,11 +199,10 @@ class UserListView extends Component<UserListProps, UserListState> {
       const { role: { list: roleList } } = this.props;
       const { currentRecord: { roles } } = this.state;
       const plainOptions: CheckboxOptionType[] = roleList.map(r => r.name);
-      const defaultCheckedList = ['Apple', 'Orange'];
-
+      const size = roles ? roles.length : 0;
       return (
         <div>
-          <span>已选择{}/{roleList.length}</span>
+          <span>已选择 <strong>{size}</strong> 条/总共 {roleList.length} 条</span>
           <CheckboxGroup
             options={plainOptions}
           // value={roles}
@@ -267,7 +266,7 @@ class UserListView extends Component<UserListProps, UserListState> {
           destroyOnClose
           title="用户角色管理"
           placement={"right"}
-          closable={false}
+          closable={true}
           visible={roleOptVisible}
           onClose={(e) => {
             this.setState({

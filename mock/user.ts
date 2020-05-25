@@ -9,7 +9,6 @@ let userListDataSource: UserListItem[] = [];
 for (let i = 0; i < 10; i += 1) {
   let roleList: string[] = [];
   const size = Math.ceil(Math.random() * 10);
-  console.log(size);
   for (let j = 0; j < size; j++) {
     roleList.push(`${(j + 1) * 100}`)
   }
@@ -174,7 +173,6 @@ function optUser(req: Request, res: Response, u: string, b: Request) {
   const { method } = req;
   const body = (b && b.body) || req.body;
   const { id, userName, nickname, email, phone } = body;
-  console.log(method);
   switch (method) {
     /* eslint no-case-declarations:0 */
     case 'DELETE':

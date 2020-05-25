@@ -1,3 +1,4 @@
+import { DatasourceModelState } from './datasource';
 import { MenuDataItem } from '@ant-design/pro-layout';
 import { GlobalModelState } from './global';
 import { DefaultSettings as SettingModelState } from '../../config/defaultSettings';
@@ -17,6 +18,7 @@ export interface Loading {
     user?: boolean;
     login?: boolean;
     role?: boolean;
+    datasource?: boolean;
   };
 }
 
@@ -26,6 +28,7 @@ export interface ConnectState {
   settings: SettingModelState;
   user: UserModelState;
   role: RoleModelState;
+  datasource: DatasourceModelState;
   login: StateType;
 }
 
