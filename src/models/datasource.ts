@@ -60,7 +60,6 @@ export interface DatasourceModelType {
   reducers: {
     saveAll: Reducer<DatasourceModelState>;
     saveDatasourceTypeList: Reducer<DatasourceModelState>;
-    saveTableList: Reducer<DatasourceModelState>;
   }
 }
 
@@ -88,12 +87,11 @@ const Model: DatasourceModelType = {
         payload: Array.isArray(resp) ? resp : [],
       });
     },
-    *fetchTableList({payload}, {call, put}) {
+    *fetchTableList({payload, callback}, {call, put}) {
       const resp = yield call(getDatasourceTableList, payload);
-      yield put({
-        type: 'saveDsTableList',
-        payload: Array.isArray(resp) ? resp: [],
-      })
+      if (resp && callback) {
+        callback(resp);
+      }
     }
   },
 
@@ -110,12 +108,6 @@ const Model: DatasourceModelType = {
         datasourceTypeList: action.payload,
       }
     },
-    saveTableList(state, action) {
-      return {
-        ...state,
-        tableList: action.payload,
-      }
-    }
   }
 }
 

@@ -1,10 +1,9 @@
 import React, { Component } from "react";
-import { PageHeaderWrapper } from "@ant-design/pro-layout";
 import { Button, Dropdown, Menu, message, Modal, Drawer, Checkbox, Card } from 'antd';
 import { connect } from "dva";
+import { Dispatch } from "umi";
 import { ConnectState } from '@/models/connect';
-import { DatasourceModelState, DatasourceListItem } from "@/models/datasource";
-import { fetchDatasourceTableList } from '@/services/datasource';
+import { DatasourceModelState, TableInfoItem } from "@/models/datasource";
 
 import DatasourceListView, { KeyValueItem } from './components/DatasourceList';
 import TableListView from './components/TableList';
@@ -19,6 +18,7 @@ interface DatasourceState {
   optModalVisible: boolean;
   isEditOpt: boolean;
   currentDsId: string;
+  currentTableList: TableInfoItem[];
 }
 
 class DatasourceView extends Component<DatasourceProps, DatasourceState> {
@@ -26,6 +26,8 @@ class DatasourceView extends Component<DatasourceProps, DatasourceState> {
     optModalVisible: false,
     isEditOpt: false,
     currentDsId: '',
+    currentTableName: '',
+    currentTableList: [],
   }
 
   componentWillMount() {
@@ -33,7 +35,7 @@ class DatasourceView extends Component<DatasourceProps, DatasourceState> {
     if (dispatch) {
       // 获取所有数据源类型
       dispatch({
-        type: 'datasource/fetchAll'
+        type: 'datasource/fetchAll',
       })
     }
   }
@@ -42,19 +44,26 @@ class DatasourceView extends Component<DatasourceProps, DatasourceState> {
    * 删除操作
    */
   handleLoadTableList = (id: string) => {
-    const hide = message.loading('正在加载数据源表信息...');
     const { dispatch } = this.props;
+    const hide = message.loading('正在获取表...');
     if (dispatch) {
       // 获取所有数据源类型
       dispatch({
-        type: 'datasource/fetchTableList'
-      })
+        type: 'datasource/fetchTableList',
+        payload: id,
+        callback: (res: TableInfoItem[]) => {
+          hide();
+          this.setState({
+            currentTableList: res,
+          });
+        }
+      });
     }
   };
 
   render() {
-    const { currentDsId, } = this.state;
-    const { datasource: { all } } = this.props;
+    const { currentDsId, currentTableName, currentTableList, } = this.state;
+    const { datasource: { all }, } = this.props;
     let allDsList: KeyValueItem[] = [];
     if (all && all.length > 0) {
       all.map(ds => {
@@ -73,14 +82,13 @@ class DatasourceView extends Component<DatasourceProps, DatasourceState> {
             this.setState({
               currentDsId: val,
             });
-            console.log('---> change')
             this.handleLoadTableList(val);
           }}
           onSync={(val) => { console.log('--->sync', val) }}
         />
         <div style={{ margin: '10px 0' }}>
           <div style={{ display: 'inline-block', width: '300px', height: '700px', border: '1px solid' }}>
-            <TableListView />
+            <TableListView defaultValue={currentTableName} list={currentTableList} />
           </div>
           <div style={{ display: 'inline-block', width: 'calc(100% - 350px)' }}>
             <SchemaInfoView />

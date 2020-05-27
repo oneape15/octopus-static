@@ -1,14 +1,10 @@
 import React, { Component } from 'react';
 import { List, Tooltip, Input } from 'antd';
-
-export interface KeyValueItem {
-  key: string;
-  value: string;
-}
+import {TableInfoItem} from '@/models/datasource';
 
 export interface TableListViewProps {
-  // defaultValue: string;
-  // list: KeyValueItem[];
+  defaultValue: string;
+  list: TableInfoItem[];
   // onChange: (value: string) => void;
   // onSync: (value: string) => void;
 }
@@ -20,7 +16,14 @@ class TableListView extends Component<TableListViewProps, any> {
     return (
       <div>
         <Input placeholder="输入表名或别名" />
-        <List></List>
+        <List
+          dataSource={list}
+          renderItem={item=> (
+            <List.Item>
+              {item.name}
+            </List.Item>
+          )}
+        />
       </div>
     );
   }
