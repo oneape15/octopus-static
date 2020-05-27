@@ -125,7 +125,7 @@ const routes = [
                 name: 'dict',
                 icon: 'read',
                 path: '/metadata/dict',
-                component: './dashboard/analysis',
+                component: './metadata/dict',
               },
             ]
           },
@@ -224,25 +224,6 @@ const routes = [
                 icon: 'smile',
                 path: '/profile/advanced',
                 component: './profile/advanced',
-              },
-            ],
-          },
-          {
-            name: 'result',
-            icon: 'CheckCircleOutlined',
-            path: '/result',
-            routes: [
-              {
-                name: 'success',
-                icon: 'smile',
-                path: '/result/success',
-                component: './result/success',
-              },
-              {
-                name: 'fail',
-                icon: 'smile',
-                path: '/result/fail',
-                component: './result/fail',
               },
             ],
           },

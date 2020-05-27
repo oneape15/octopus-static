@@ -163,8 +163,22 @@ function optDatasource(req: Request, res: Response, u: string, b: Request) {
 }
 
 function getAllDatasource(req: Request, res: Response) {
-
+  return res.json(dsList);
 }
+
+function getTableList(req: Request, res: Response) {
+  return res.json([
+    {
+      name: 'tb_user',
+      alias: '用户表'
+    },
+    {
+      name: 'tb_role',
+      alias: '角色表'
+    }
+  ])
+}
+
 export default {
   // 查询
   'GET    /metadata/datasource': getDatasources,
@@ -178,4 +192,6 @@ export default {
   'GET    /metadata/datasource/allDatasource': getAllDatasource,
   // 获取数据源类型
   'GET    /metadata/datasource/dsTypeList': getDataTypeList,
+  // 获取相应数据源的表信息
+  'POST /metadata/datasource/getDsTableList': getTableList,
 };

@@ -1,5 +1,5 @@
 import { Effect, Reducer } from 'umi';
-import { queryAll, queryDatasourceTypeList } from '@/services/datasource';
+import { queryAll, queryDatasourceTypeList, getDatasourceTableList } from '@/services/datasource';
 
 export interface DatasourceListItem {
   // 主键id
@@ -38,9 +38,15 @@ export interface DatasourceTypeItem {
   jdbcUrl?: string;
 }
 
+export interface TableInfoItem {
+  name: string;
+  alias?: string;
+}
+
 export interface DatasourceModelState {
   all: DatasourceListItem[];
   datasourceTypeList: DatasourceTypeItem[];
+  tableList: TableInfoItem[];
 }
 
 export interface DatasourceModelType {
@@ -49,10 +55,12 @@ export interface DatasourceModelType {
   effects: {
     fetchAll: Effect;
     fetchTypeList: Effect;
+    fetchTableList: Effect;
   };
   reducers: {
     saveAll: Reducer<DatasourceModelState>;
     saveDatasourceTypeList: Reducer<DatasourceModelState>;
+    saveTableList: Reducer<DatasourceModelState>;
   }
 }
 
@@ -62,6 +70,7 @@ const Model: DatasourceModelType = {
   state: {
     all: [],
     datasourceTypeList: [],
+    tableList:[],
   },
 
   effects: {
@@ -78,6 +87,13 @@ const Model: DatasourceModelType = {
         type: 'saveDatasourceTypeList',
         payload: Array.isArray(resp) ? resp : [],
       });
+    },
+    *fetchTableList({payload}, {call, put}) {
+      const resp = yield call(getDatasourceTableList, payload);
+      yield put({
+        type: 'saveDsTableList',
+        payload: Array.isArray(resp) ? resp: [],
+      })
     }
   },
 
@@ -94,6 +110,12 @@ const Model: DatasourceModelType = {
         datasourceTypeList: action.payload,
       }
     },
+    saveTableList(state, action) {
+      return {
+        ...state,
+        tableList: action.payload,
+      }
+    }
   }
 }
 

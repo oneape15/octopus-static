@@ -81,3 +81,16 @@ export async function removeDatasource(id: string) {
     }
   })
 }
+
+/**
+ * 拉取数据源的所有表信息
+ * @param id 
+ */
+export async function getDatasourceTableList(id: string) {
+  return request(`${dsUri}/getDsTableList`, {
+    method: 'POST',
+    data: {
+      id,
+    }
+  })
+}
